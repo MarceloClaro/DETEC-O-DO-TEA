@@ -7,7 +7,7 @@ Original file is located at
     https://colab.research.google.com/drive/1aDop73YQxlbj1oCJpTc4yX9ap1N-tw_9
 """
 
-
+pip install streamlit
 
 import streamlit as st
 import numpy as np
@@ -22,21 +22,21 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 
 
-# Create a function to generate the autoencoder
+# Crie uma função para gerar o autoencoder
 def createAutoencoder():
-    # Get the dataset
+    # Obter o conjunto de dados
     from tensorflow.keras.datasets import mnist
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
     
-    # Normalize the data
+    # Normalizar os dados
     x_train = x_train.astype('float32')/255.
     x_test = x_test.astype('float32')/255.
     
-    # Reshape images from 28x28 to 32x32
+    # Remodelar imagens de 28x28 para 32x32
     x_train = np.pad(x_train,((0,0),(2,2),(2,2)),'constant', constant_values=0)
     x_test = np.pad(x_test,((0,0),(2,2),(2,2)), 'constant', constant_values=0)
     
-    # Create the model
+    # Criar o modelo
     autoencoder = tf.keras.models.Sequential([tf.keras.layers.InputLayer(input_shape=(32, 32, 1)),
                                               tf.keras.layers.Conv2D(16,(3,3), activation='relu', padding='same'), 
                                               tf.keras.layers.MaxPooling2D(pool_size=(2,2)), 
@@ -51,27 +51,27 @@ def createAutoencoder():
     autoencoder.compile(optimizer='adam', loss='binary_crossentropy')
     autoencoder.summary()
     
-    # Reshape data to fit the model
+    # Remodelar os dados para caber no modelo
     x_train = x_train.reshape(-1, 28, 28, 1)
     x_test = x_test.reshape(-1, 28, 28, 1)
     
-    # Train the model and save it
+    # Treine o modelo e salve-o
     autoencoder.fit(x_train, x_train, epochs=10, batch_size=128,
                     shuffle=True, validation_data=(x_test, x_test))
     autoencoder.save_weights('./autoencoder_mnist.h5')
     
-# Create a function to load the dataset
+# Crie uma função para carregar o conjunto de dados
 def downloadAndUnzip():
     filename = 'AutData.zip'
 
     if not os.path.exists(filename):
-        !wget -q\"https://drive.google.com/file/d/14zeNkO1cHKnCEa-pFwnZVB4yk3MKu8XJ/view?usp=share_link"\ 
+        !wget-q\"https://drive.google.com/file/d/14zeNkO1cHKnCEa-pFwnZVB4yk3MKu8XJ/view?usp=sharing"\
         -O AutData.zip
         zipped_data = zipfile.Zip
         File(filename, 'r')
         zipped_data.extractall()
 
-# Create a function to load the images
+# Crie uma função para carregar as imagens
 def loadImages():
     img_data =[]
     labels =[]
@@ -84,7 +84,7 @@ def loadImages():
         img = Image.open(autistic_path+autistic_img).convert('L')
         img_data.append(np.array(img))
     
-    #Load Non-Autistic Images
+    #Carregar imagens não autistas
     non_autistic_images_list = os.listdir('./AutData/NonAutData/')
     non_autistic_path = './AutData/NonAutData/'
     for non_autistic_img in non_autistic_images_list:
@@ -92,14 +92,14 @@ def loadImages():
         img = Image.open(non_autistic_path+non_autistic_img).convert('L')
         img_data.append(np.array(img))
     
-    # Reshape images
+    # Remodelar imagens
     img_data = np.array(img_data).reshape(-1, 28, 28, 1).astype('float16')
 
-    # Normalize the data
+    # Normalizar os dados
     img_data /= 255.
     return img_data, labels
 
-# Create a function to build the model
+# Criar uma função para construir o modelo
 def buildModel():
     model = tf.keras.Sequential([
         tf.keras.layers.Conv2D(32, (3,3), activation='relu', input_shape=(28, 28, 1)),
@@ -118,7 +118,7 @@ def buildModel():
 
 #
 def plotGraph(history):
-# Plot of accuracy vs. epochs
+# Gráfico de precisão vs. épocas
     acc = history.history['accuracy']
     epochs = range(len(acc))
     fig = plt.figure(figsize=(7,4))
@@ -131,7 +131,7 @@ def plotGraph(history):
 
 #
 def plotResults():
-    # Plot results of accuracy
+    # Plotar resultados de precisão
     plt.figure(figsize=(16, 6))
     plt.subplot(1, 2, 1)
     sns.heatmap(cm_test, annot=True, cmap="Blues", fmt="d", 
@@ -141,7 +141,7 @@ def plotResults():
     plt.xlabel("Predicted label")
     plt.ylabel("True label")
 
-    # Plot results of accuracy
+    # Plotar resultados de precisão
     plt.subplot(1, 2, 2)
     sns.heatmap(cm_train, annot=True, cmap="Blues", fmt="d", 
                 xticklabels=class_names, 
@@ -150,30 +150,30 @@ def plotResults():
     plt.xlabel("Predicted label")
     plt.ylabel("True label")
 
-# Create a main function
+# Crie uma função principal
 def main():
     st.title('Image Classification using Neural Networks')
 
-    # Create a sidebar menu
+    # Crie um menu lateral
     st.sidebar.header('Autism Image Classification')
     menu = ["Download & Unzip", "Create Autoencoder","Train Model and Classify Images","Results & Conclusions"]
     choice = st.sidebar.selectbox("Menu", menu)
 
-    # Download and unzip the dataset
+    # Baixe e descompacte o conjunto de dados
     if choice == "Download & Unzip":
-        with st.spinner('Downloading and unzipping dataset...'):
+        with st.spinner('Baixando e descompactando o conjunto de dados...'):
             time.sleep(3)
-            st.success('Download and unzip successful!')
+            st.success('Baixe e descompacte com sucesso!')
             downloadAndUnzip()
 
 
-    # Create a CNN autoencoder
+    # Criar um autoencoder CNN
     if choice == "Create Autoencoder":
         st.subheader('Create Autoencoder using Convolutional Neural Networks')
         st.write('An autoencoder is an unsupervised machine learning algorithm that takes an input image and encodes it into a set of features, which can be used to reconstruct the original input.')
         option = st.selectbox("Options",["Create Autoencoder","View Summary of Autoencoder Model"])
 
-        # Create an autoencoder
+        # Criar um codificador automático
         if option == "Create Autoencoder":
             with st.spinner('Creating autoencoder...'):
                 time.sleep(3)
@@ -181,22 +181,22 @@ def main():
                 createAutoencoder()
 
         
-        # View the autoencoder summary
+        # Exibir o resumo do codificador automático
         if option == "View Summary of Autoencoder Model":
             st.write(tf.keras.models.load_model('autoencoder_mnist.h5').summary())
 
 
-    # Train the model and classify images
+    # Treine o modelo e classifique as imagens
     if choice == "Train Model and Classify Images":
         st.subheader('Train Model and Classify Images')
         option = st.radio("Options",("Train Model","Classify Images"))
 
-        # Train the model
+        # Treine o modelo
         if option == "Train Model":
-            # Load the data
+            # Carregar os dados
             img_data, labels = loadImages()
 
-            # Split the data
+            # Divida os dados
             from sklearn.model_selection import train_test_split
             X_train, X_test, y_train, y_test = train_test_split(img_data, labels,
                                                             random_state=1,
@@ -205,7 +205,7 @@ def main():
             # Create the model
             model = buildModel()
 
-            # Train the model
+            # Treine o modelo
             with st.spinner('Training model...'):
                 time.sleep(3)
             history = model.fit(X_train, y_train,
@@ -216,29 +216,29 @@ def main():
             st.success("Model trained successfully!")
 
 
-        # Classify images
+        # Classificar imagens
         if option == "Classify Images":
-            # Load a new image
+            # Carregar uma nova imagem
             newImage = st.file_uploader("Upload an Image", type="jpg")
 
-            # Predict the class
+            # prever a classe
             if newImage is not None:
                 with st.spinner('Classifying image...'):
                     time.sleep(3)
                 newImage = Image.open(newImage).convert('L')
                 
-                # Reshape the image
+                # Remodele a imagem
                 img = np.array(newImage).reshape(-1, 28, 28, 1).astype('float16')
 
-                 # Normalize the data
+                 # Normalizar os dados
                 img /= 255.
                 
-                # Load the model
+                # Carregar o modelo
                 model = buildModel()
                 model.load_weights('autoencoder_mnist.h5')
                 probabilities = model.predict(img)
                 
-                # Get the class
+                # Obter a classe
                 if np.argmax(probabilities) == 0:
                     class_name = 'Autistic'
                 else:
@@ -247,26 +247,26 @@ def main():
                 st.success('Classification successful!')
 
 
-    # Show results and conclusions
+    # Mostrar resultados e conclusões
     if choice == "Results & Conclusions":
         st.subheader('Classification Results & Conclusions')
 
-        # Confusion matrix
+        # matriz de confusão
         from sklearn.metrics import confusion_matrix
         cm_test = confusion_matrix(y_test, y_pred_test)
         cm_train = confusion_matrix(y_train, y_pred_train)
 
-        # Get the class names
+        # Obtenha os nomes das classes
         class_names = ['Autistic','Non-autistic']
 
-        # Confusion matrix
+        # matriz de confusão
         plotResults()
 
-        # Accuracies
+        # Precisões
         st.write('The testing accuracy is: %.2f' % accuracy_test)
         st.write('The training accuracy is: %.2f' % accuracy_train)
 
-        # Conclusions
+        # Conclusões
         st.write('The results obtained show that the autoencoder was able to classify images with an accuracy of %.2f on the test set and %.2f on the train set.' % (accuracy_test, accuracy_train))
 
 if __name__ == '__main__':
