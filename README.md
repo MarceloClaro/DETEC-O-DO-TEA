@@ -1,2 +1,2 @@
-# Deteccao-covid-19
-Detecção de COVID-19 em imagens de raios-X com Keras, TensorFlow e Deep Learning
+# TEA-19
+Detecção de TEA em imagens faciais com Keras, TensorFlow e Deep Learning
