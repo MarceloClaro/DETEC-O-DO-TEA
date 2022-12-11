@@ -65,7 +65,8 @@ def downloadAndUnzip():
     filename = 'AutData.zip'
 
     if not os.path.exists(filename):
-        !wget -q\"https://drive.google.com/file/d/14zeNkO1cHKnCEa-pFwnZVB4yk3MKu8XJ/view?usp=share_link"\ -O AutData.zip
+        !wget -q\"https://drive.google.com/file/d/14zeNkO1cHKnCEa-pFwnZVB4yk3MKu8XJ/view?usp=share_link"\ 
+        -O AutData.zip
         zipped_data = zipfile.Zip
         File(filename, 'r')
         zipped_data.extractall()
